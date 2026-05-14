@@ -16,6 +16,57 @@ def playing_area():
 		t.right(90)
 	t.end_fill()
 
+def up():
+    global player
+    player.setheading(90)
+    if player.ycor()!=240:
+        player.sety(player.ycor()+10)
+    
+def down():
+    global player
+    player.setheading(-90)
+    if player.ycor()!=-240:
+      player.sety(player.ycor()-10)
+
+def right():
+    global player
+    player.setheading(0)
+    if player.xcor()!=240:
+        player.setx(player.xcor()+10)
+
+def left():
+    global player
+    player.setheading(180)
+    if player.xcor()!=-240:
+        player.setx(player.xcor()-10)
+
+def move_heading(t,zombies):
+    t.forward(5)
+    if t.xcor() > 240 or t.xcor() < -240:
+        t.setheading(180-t.heading())
+        t.forward(12)
+        zombies.append(create_zombies())
+    if t.ycor()> 240 or t.ycor()<-240:
+        t.setheading(-t.heading())
+        t.forward(12)
+        zombies.append(create_zombies())
+    return zombies
+
+def create_zombies():
+    t = Turtle()
+    t.color("green")
+    t.shape("turtle")
+    t.speed(0)
+    t.setheading(random.randint(0,360))
+    return t
+
+def move(self):
+    self.forward(10)
+    if self.xcor() > 240 or self.xcor() < -240 or self.ycor()> 240 or self.ycor()<-240:
+        self.die()
+
+def fire(self):
+        self.bullets.append(Bullet(self))		
 '''
 Player() Class
 
@@ -26,7 +77,6 @@ Constructor( def __init__(self)):
 - will take in keys to turn left, turn right and shoot bullets.
 - player will have an attribute that is a list that stores bullets
 
-
 move(self):
 - moves object forward five pixels
 
@@ -35,8 +85,48 @@ fire(self):
 - appends the Bullet object to the players's bullet list
 '''
 class Player(Turtle):
-	pass
+    def __init__(self, x, y, color, screen, right_key, left_key, fire_key):
+        super().__init__()
+        # self.health = 3
+        self.ht()
+        self.speed(0)
+        self.color(color)
+        self.penup()
+        self.goto(x,y)
+        self.setheading(90)
+        self.shape("turtle")
+        self.bullets = []
+        self.color = color
+        self.alive = True
+        self.st()
+        screen.onkeypress(self.turn_left, left_key)
+        screen.onkeypress(self.turn_right, right_key)
+        screen.onkey(self.fire, fire_key)
 
+class Bullet(Turtle):
+    def __init__(self, player):
+        super().__init__()
+        self.hideturtle()
+        self.speed(0)
+        self.color(player.color)
+        self.setheading(player.heading())
+        self.penup()
+        self.goto(player.xcor(), player.ycor())
+        self.st()
+
+class Prize(Turtle):
+  def __init__(self):
+    super().__init__()
+    self.ht()
+    self.speed(0)
+    self.color("red")
+    self.shape("circle")
+    self.penup()
+    x = random.randint(-200,200)
+    y = random.randint(-200,200)
+    self.goto(x,y)
+    self.setheading(90)
+    self.st()
 '''
 Bullet() Class
 Constructor ( def __init__(self) ):
@@ -54,13 +144,50 @@ die()
 - hides the object. 
 - removes object from the player's bullet list
 '''
-
+def die(self):
+    self.alive =False
+    self.ht()
 
 #### DRIVER CODE ####
+
+def update():
+	if p1.distance(Prize) <20 or p2.distance(prize)<20:
+		prize.goto(random.randint, random.randint)
+		prize.move(0)
+
+    # if head.distance(Segment.other)<20:
+    #   head.alive=False
+    #   self.die()
+    #   self.ht()
+screen.ontimer(update, 120)
+
+
 screen = Screen()
 screen.bgcolor("black")
 
 playing_area()
 
 
+p1 = Player(100,0,"blue",screen,"Right","Left", "Up")
+
+
+
+while p1.alive and p2.alive:
+    p1.move()
+    p2.move()
+    for bullet in p1.bullets:
+        bullet.move()
+        if bullet.distance(zombies)<20:
+            bullet.hideturtle()
+            p1.bullets.remove(bullet)
+			p2.alive=False
+			p2.hideturtle()
+
+    for bullet in p2.bullets:
+        bullet.move()
+        if bullet.distance(zombies)<20:
+            bullet.hideturtle()
+            p2.bullets.remove(bullet)
+			p1.alive=False
+			p1.hideturtle()
 screen.mainloop()
