@@ -61,9 +61,15 @@ def create_zombies():
     return t
 
 def move(self):
-    self.forward(10)
+    self.forward(15)
     if self.xcor() > 240 or self.xcor() < -240 or self.ycor()> 240 or self.ycor()<-240:
         self.die()
+    if bullet.xcor() > 240 or bullet.xcor() < -240 or bullet.ycor()> 240 or bullet.ycor()<-240:
+        self.die()
+        bullet.hideturtle()
+        self.bullets.remove(bullet)
+
+
 
 def fire(self):
         self.bullets.append(Bullet(self))		
@@ -87,7 +93,6 @@ fire(self):
 class Player(Turtle):
     def __init__(self, x, y, color, screen, right_key, left_key, fire_key):
         super().__init__()
-        # self.health = 3
         self.ht()
         self.speed(0)
         self.color(color)
@@ -102,6 +107,15 @@ class Player(Turtle):
         screen.onkeypress(self.turn_left, left_key)
         screen.onkeypress(self.turn_right, right_key)
         screen.onkey(self.fire, fire_key)
+
+# this for prize move function to keep it constantly moving
+deltax=random.randint(-2,2)
+deltay=random.randint(-2,2)
+
+self.goto(self.xcor()+deltax, self.ycor()+deltay)
+
+
+
 
 class Bullet(Turtle):
     def __init__(self, player):
@@ -155,11 +169,8 @@ def update():
 		prize.goto(random.randint, random.randint)
 		prize.move(0)
 
-    # if head.distance(Segment.other)<20:
-    #   head.alive=False
-    #   self.die()
-    #   self.ht()
-screen.ontimer(update, 120)
+    
+Screen.ontimer(update, 120)
 
 
 screen = Screen()
@@ -169,7 +180,7 @@ playing_area()
 
 
 p1 = Player(100,0,"blue",screen,"Right","Left", "Up")
-
+p2 = Player(-100,0,"red",screen,"d","a", "w")
 
 
 while p1.alive and p2.alive:
@@ -180,14 +191,23 @@ while p1.alive and p2.alive:
         if bullet.distance(zombies)<20:
             bullet.hideturtle()
             p1.bullets.remove(bullet)
-			p2.alive=False
-			p2.hideturtle()
-
+            zombie.die()
+            zombie.ht()
     for bullet in p2.bullets:
         bullet.move()
         if bullet.distance(zombies)<20:
             bullet.hideturtle()
             p2.bullets.remove(bullet)
-			p1.alive=False
-			p1.hideturtle()
+            zombie.die()
+            zombie.ht()
+    zombies.setheading(zombies.towards(p1,p2))
+    if zombies.distance(p1)<20:
+        p1.die()
+        p1.ht()
+    if zombies.distance(p2)<20:
+        p2.die()
+        p2.ht()
+
+
+
 screen.mainloop()
