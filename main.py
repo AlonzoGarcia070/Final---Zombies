@@ -69,8 +69,6 @@ def move(self):
         bullet.hideturtle()
         self.bullets.remove(bullet)
 
-
-
 def fire(self):
         self.bullets.append(Bullet(self))		
 '''
@@ -104,15 +102,14 @@ class Player(Turtle):
         self.color = color
         self.alive = True
         self.st()
-        screen.onkeypress(self.turn_left, left_key)
-        screen.onkeypress(self.turn_right, right_key)
+        screen.onkeypress(self.left, left_key)
+        screen.onkeypress(self.right, right_key)
         screen.onkey(self.fire, fire_key)
 
 # this for prize move function to keep it constantly moving
-deltax=random.randint(-2,2)
-deltay=random.randint(-2,2)
-
-self.goto(self.xcor()+deltax, self.ycor()+deltay)
+# deltax=random.randint(-2,2)
+# deltay=random.randint(-2,2)
+# self.goto(self.xcor()+deltax, self.ycor()+deltay)
 
 
 
@@ -141,6 +138,9 @@ class Prize(Turtle):
     self.goto(x,y)
     self.setheading(90)
     self.st()
+    deltax=random.randint(-2,2)
+    deltay=random.randint(-2,2)
+    self.goto(self.xcor()+deltax, self.ycor()+deltay)
 '''
 Bullet() Class
 Constructor ( def __init__(self) ):
@@ -165,12 +165,10 @@ def die(self):
 #### DRIVER CODE ####
 
 def update():
-	if p1.distance(Prize) <20 or p2.distance(prize)<20:
-		prize.goto(random.randint, random.randint)
-		prize.move(0)
-
-    
-Screen.ontimer(update, 120)
+    if p1.distance(Prize) <20 or p2.distance(prize)<20:
+        prize.goto(random.randint, random.randint)
+        prize.move(0)
+        Screen.ontimer(update, 120)
 
 
 screen = Screen()
