@@ -16,61 +16,38 @@ def playing_area():
 		t.right(90)
 	t.end_fill()
 
-def up():
-    global player
-    player.setheading(90)
-    if player.ycor()!=240:
-        player.sety(player.ycor()+10)
+# def up():
+#     global player
+#     player.setheading(90)
+#     if player.ycor()!=240:
+#         player.sety(player.ycor()+10)
     
-def down():
-    global player
-    player.setheading(-90)
-    if player.ycor()!=-240:
-      player.sety(player.ycor()-10)
+# def down():
+#     global player
+#     player.setheading(-90)
+#     if player.ycor()!=-240:
+#       player.sety(player.ycor()-10)
 
-def right():
-    global player
-    player.setheading(0)
-    if player.xcor()!=240:
-        player.setx(player.xcor()+10)
 
-def left():
-    global player
-    player.setheading(180)
-    if player.xcor()!=-240:
-        player.setx(player.xcor()-10)
 
-def move_heading(t,zombies):
-    t.forward(5)
-    if t.xcor() > 240 or t.xcor() < -240:
-        t.setheading(180-t.heading())
-        t.forward(12)
-        zombies.append(create_zombies())
-    if t.ycor()> 240 or t.ycor()<-240:
-        t.setheading(-t.heading())
-        t.forward(12)
-        zombies.append(create_zombies())
-    return zombies
 
-def create_zombies():
-    t = Turtle()
-    t.color("green")
-    t.shape("turtle")
-    t.speed(0)
-    t.setheading(random.randint(0,360))
-    return t
+class Zombie(Turtle):
+    def __init__(self, player):
+        super().__init__()
+        self.ht()
+        self.speed(2)
+        self.color("green")
+        self.penup()
+        self.goto(x,y)
+        self.setheading(self.towards(player))
+        self.shape("turtle")
+        self.player = player
 
-def move(self):
-    self.forward(15)
-    if self.xcor() > 240 or self.xcor() < -240 or self.ycor()> 240 or self.ycor()<-240:
-        self.die()
-    if bullet.xcor() > 240 or bullet.xcor() < -240 or bullet.ycor()> 240 or bullet.ycor()<-240:
-        self.die()
-        bullet.hideturtle()
-        self.bullets.remove(bullet)
-
-def fire(self):
-        self.bullets.append(Bullet(self))		
+    def move(self):
+        self.setheading(self.towards(self.player))
+        self.forward(3)
+        
+		
 '''
 Player() Class
 
@@ -106,13 +83,38 @@ class Player(Turtle):
         screen.onkeypress(self.right, right_key)
         screen.onkey(self.fire, fire_key)
 
+    def turn_left(self):
+        self.left(10)
+
+    def turn_right(self):
+        self.right(10)
+
+    def move(self):
+        self.forward(4)
+        if self.xcor() > 230 or self.xcor() < -230:
+            self.setheading(180 - self.heading())
+        if self.ycor() > 230 or self.ycor() < -230:
+            self.setheading(-self.heading())
+
+    def fire(self):
+        self.bullets.append(Bullet(self))
+
+    def move_heading(t,zombies):
+        self.forward(5)
+        if self.xcor() > 240 or self.xcor() < -240:
+            self.setheading(180-self.heading())
+            self.forward(12)
+            Zombie.append(zombies())
+        if self.ycor()> 240 or self.ycor()<-240:
+            self.setheading(-self.heading())
+            self.forward(12)
+            zombies.append(zombies())
+        return zombies
+
 # this for prize move function to keep it constantly moving
 # deltax=random.randint(-2,2)
 # deltay=random.randint(-2,2)
 # self.goto(self.xcor()+deltax, self.ycor()+deltay)
-
-
-
 
 class Bullet(Turtle):
     def __init__(self, player):
@@ -170,16 +172,13 @@ def update():
         prize.move(0)
         Screen.ontimer(update, 120)
 
-
 screen = Screen()
 screen.bgcolor("black")
 
 playing_area()
 
-
 p1 = Player(100,0,"blue",screen,"Right","Left", "Up")
 p2 = Player(-100,0,"red",screen,"d","a", "w")
-
 
 while p1.alive and p2.alive:
     p1.move()
@@ -198,7 +197,8 @@ while p1.alive and p2.alive:
             p2.bullets.remove(bullet)
             zombie.die()
             zombie.ht()
-    zombies.setheading(zombies.towards(p1,p2))
+    for zombies in zombie:
+        zombies.setheading(zombies.towards(p1,p2))
     if zombies.distance(p1)<20:
         p1.die()
         p1.ht()
@@ -206,6 +206,7 @@ while p1.alive and p2.alive:
         p2.die()
         p2.ht()
 
+# for zombie in zombies
 
 
 screen.mainloop()
