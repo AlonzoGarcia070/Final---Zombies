@@ -15,33 +15,26 @@ def playing_area():
 		t.right(90)
 	t.end_fill()
 
-# def up():
-#     global player
-#     player.setheading(90)
-#     if player.ycor()!=240:
-#         player.sety(player.ycor()+10)
-    
-# def down():
-#     global player
-#     player.setheading(-90)
-#     if player.ycor()!=-240:
-#       player.sety(player.ycor()-10)
-
 class Zombie(Turtle):
-    def __init__(self, player):
+    def __init__(self, player,zombies):
         super().__init__()
         self.ht()
         self.speed(2)
         self.color("green")
         self.penup()
-        self.goto(x,y)
+        self.goto(random.randint(-200,200), random.randint(-200,200))
         self.setheading(self.towards(player))
         self.shape("turtle")
         self.player = player
+        self.zombies = zombies
 
     def move(self):
         self.setheading(self.towards(self.player))
-        self.forward(3)	
+        self.forward(3)
+    
+    def die(self):
+        self.ht()
+        self.zombies.remove(self)
 '''
 Player() Class
 
@@ -73,8 +66,8 @@ class Player(Turtle):
         self.color = color
         self.alive = True
         self.st()
-        screen.onkeypress(self.left, left_key)
-        screen.onkeypress(self.right, right_key)
+        screen.onkeypress(self.turn_left, left_key)
+        screen.onkeypress(self.turn_right, right_key)
         screen.onkey(self.fire, fire_key)
 
     def turn_left(self):
@@ -93,17 +86,6 @@ class Player(Turtle):
     def fire(self):
         self.bullets.append(Bullet(self))
 
-    def move_heading(t,zombies):
-        self.forward(5)
-        if self.xcor() > 240 or self.xcor() < -240:
-            self.setheading(180-self.heading())
-            self.forward(12)
-            Zombie.append(zombies())
-        if self.ycor()> 240 or self.ycor()<-240:
-            self.setheading(-self.heading())
-            self.forward(12)
-            zombies.append(zombies())
-        return zombies
 
 # this for prize move function to keep it constantly moving
 # deltax=random.randint(-2,2)
@@ -119,24 +101,42 @@ class Bullet(Turtle):
         self.setheading(player.heading())
         self.penup()
         self.goto(player.xcor(), player.ycor())
+        self.forward(15)
+        self.player = player
         self.st()
+    
+    def move(self):
+        self.forward(10)
+        if self.xcor() > 230 or self.xcor() < -230:
+           self.remove()
+        if self.ycor() > 230 or self.ycor() < -230:
+            self.remove()
+
+
+    def remove(self):
+        self.ht()
+        self.player.bullets.remove(self)
+        
 
 class Prize(Turtle):
-  def __init__(self):
-    super().__init__()
-    self.ht()
-    self.speed(0)
-    self.color("red")
-    self.shape("circle")
-    self.penup()
-    x = random.randint(-200,200)
-    y = random.randint(-200,200)
-    self.goto(x,y)
-    self.setheading(90)
-    self.st()
-    deltax=random.randint(-2,2)
-    deltay=random.randint(-2,2)
-    self.goto(self.xcor()+deltax, self.ycor()+deltay)
+    def __init__(self):
+        super().__init__()
+        self.ht()
+        self.speed(0)
+        self.color("red")
+        self.shape("circle")
+        self.penup()
+        x = random.randint(-200,200)
+        y = random.randint(-200,200)
+        self.goto(x,y)
+        self.setheading(90)
+        self.st()
+
+
+    def move(self):
+        deltax=random.randint(-2,2)
+        deltay=random.randint(-2,2)
+        self.goto(self.xcor()+deltax, self.ycor()+deltay)
 '''
 Bullet() Class
 Constructor ( def __init__(self) ):
@@ -161,34 +161,41 @@ def die(self):
 #### DRIVER CODE ####
 
 def update():
+    #player collides with prize
     if p1.distance(prize) <20 or p2.distance(prize)<20:
         prize.goto(random.randint(-200, 200), random.randint(-200,200))
-        prize.move(0)
+        zombie.append(zombies)
+    #Prize moves
+    prize.move()
+
+    #Players move
     p1.move()
     p2.move()
+
+
     for bullet in p1.bullets:
+        #Bullet moves
         bullet.move()
-        if bullet.distance(zombies)<20:
-            bullet.hideturtle()
-            p1.bullets.remove(bullet)
-            zombie.die()
-            zombie.ht()
+        for zombie in zombies:
+            if bullet.distance(zombie)<20:
+                bullet.remove()
+                zombie.die()
+                
     for bullet in p2.bullets:
         bullet.move()
-        if bullet.distance(zombies)<20:
-            bullet.hideturtle()
-            p2.bullets.remove(bullet)
-            zombie.die()
-            zombie.ht()
+        for zombie in zombies:
+            if bullet.distance(zombie)<20:
+                bullet.remove()
+                zombie.die()
+         
     for zombie in zombies:
         zombie.move()
-        zombies.setheading(zombies.towards(p1,p2))
         if zombie.distance(p1)<20:
             p1.die()
-            p1.ht()
+            
         if zombie.distance(p2)<20:
             p2.die()
-            p2.ht()
+
 
     screen.ontimer(update, 120)
 
