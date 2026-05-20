@@ -1,6 +1,5 @@
 from turtle import *
-from random import randint, choice
-
+import random
 #### CLASS AND FUNCTION DEFINITIONS #####
 def playing_area():
 	t = Turtle()
@@ -28,9 +27,6 @@ def playing_area():
 #     if player.ycor()!=-240:
 #       player.sety(player.ycor()-10)
 
-
-
-
 class Zombie(Turtle):
     def __init__(self, player):
         super().__init__()
@@ -45,9 +41,7 @@ class Zombie(Turtle):
 
     def move(self):
         self.setheading(self.towards(self.player))
-        self.forward(3)
-        
-		
+        self.forward(3)	
 '''
 Player() Class
 
@@ -167,20 +161,9 @@ def die(self):
 #### DRIVER CODE ####
 
 def update():
-    if p1.distance(Prize) <20 or p2.distance(prize)<20:
-        prize.goto(random.randint, random.randint)
+    if p1.distance(prize) <20 or p2.distance(prize)<20:
+        prize.goto(random.randint(-200, 200), random.randint(-200,200))
         prize.move(0)
-        Screen.ontimer(update, 120)
-
-screen = Screen()
-screen.bgcolor("black")
-
-playing_area()
-
-p1 = Player(100,0,"blue",screen,"Right","Left", "Up")
-p2 = Player(-100,0,"red",screen,"d","a", "w")
-
-while p1.alive and p2.alive:
     p1.move()
     p2.move()
     for bullet in p1.bullets:
@@ -197,16 +180,55 @@ while p1.alive and p2.alive:
             p2.bullets.remove(bullet)
             zombie.die()
             zombie.ht()
-    for zombies in zombie:
+    for zombie in zombies:
+        zombie.move()
         zombies.setheading(zombies.towards(p1,p2))
-    if zombies.distance(p1)<20:
-        p1.die()
-        p1.ht()
-    if zombies.distance(p2)<20:
-        p2.die()
-        p2.ht()
+        if zombie.distance(p1)<20:
+            p1.die()
+            p1.ht()
+        if zombie.distance(p2)<20:
+            p2.die()
+            p2.ht()
 
-# for zombie in zombies
+    screen.ontimer(update, 120)
+
+# while loop info does it need to be in update function or still in its own while loop
+
+screen = Screen()
+screen.bgcolor("black")
+screen.listen()
+playing_area()
+
+prize=Prize()
+p1 = Player(100,0,"blue",screen,"Right","Left", "Up")
+p2 = Player(-100,0,"red",screen,"d","a", "w")
+zombies =[]
+update()
+# while p1.alive and p2.alive:
+    # p1.move()
+    # p2.move()
+    # for bullet in p1.bullets:
+    #     bullet.move()
+    #     if bullet.distance(zombies)<20:
+    #         bullet.hideturtle()
+    #         p1.bullets.remove(bullet)
+    #         zombie.die()
+    #         zombie.ht()
+    # for bullet in p2.bullets:
+    #     bullet.move()
+    #     if bullet.distance(zombies)<20:
+    #         bullet.hideturtle()
+    #         p2.bullets.remove(bullet)
+    #         zombie.die()
+    #         zombie.ht()
+    # for zombies in Zombie:
+    #     zombies.setheading(zombies.towards(p1,p2))
+    # if zombies.distance(p1)<20:
+    #     p1.die()
+    #     p1.ht()
+    # if zombies.distance(p2)<20:
+    #     p2.die()
+    #     p2.ht()
 
 
 screen.mainloop()
